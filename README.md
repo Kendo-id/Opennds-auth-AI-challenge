@@ -4,6 +4,9 @@
 > 
 > *A captive portal built on OpenNDS with quiz-based authentication and an interactive AI assistant*
 
+![Arsitektur](https://kendo-id.github.io/Opennds-auth-AI-challenge/architecture.svg)
+
+
 
 [Preview HTML](https://htmlpreview.github.io/?https://kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
 ---

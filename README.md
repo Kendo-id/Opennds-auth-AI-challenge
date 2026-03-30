@@ -1,4 +1,4 @@
-# 🦗 Jangkrik AI — WiFi Captive Portal with AI Assistant
+# OpenNDS FAS WiFi Captive Portal with AI Assistant
 
 > **Captive portal berbasis OpenNDS dengan autentikasi kuis dan asisten AI interaktif**
 > 
@@ -9,10 +9,10 @@
 ## 📖 Deskripsi / Description
 
 **Bahasa Indonesia:**  
-Jangkrik AI adalah sistem captive portal untuk jaringan WiFi yang mengintegrasikan OpenNDS (pada router GL-iNet/OpenWrt) dengan backend Flask. Pengguna yang terhubung ke WiFi akan diarahkan ke halaman portal, di mana mereka harus menjawab kuis sederhana untuk mendapatkan akses internet. Selama menunggu, pengguna dapat berinteraksi dengan asisten AI bernama **Kendo** — karakter yang blak-blakan, ketus, dan latah — yang ditenagai oleh Groq LLM.
+Jangkrik adalah sistem captive portal untuk jaringan WiFi yang mengintegrasikan OpenNDS (pada router GL-iNet/OpenWrt) dengan backend Flask. Pengguna yang terhubung ke WiFi akan diarahkan ke halaman portal, di mana mereka harus menjawab kuis sederhana untuk mendapatkan akses internet. Selama menunggu, pengguna dapat berinteraksi dengan asisten AI bernama **Kendo** — karakter yang blak-blakan, ketus, dan latah — yang ditenagai oleh Groq LLM.
 
 **English:**  
-Jangkrik AI is a WiFi captive portal system integrating OpenNDS (on GL-iNet/OpenWrt routers) with a Flask backend. Users connecting to the WiFi are redirected to a portal page where they must answer a simple quiz to gain internet access. While waiting, users can chat with an AI assistant named **Kendo** — a blunt, grumpy, and easily startled character — powered by the Groq LLM API.
+Jangkrik is a WiFi captive portal system integrating OpenNDS (on GL-iNet/OpenWrt routers) with a Flask backend. Users connecting to the WiFi are redirected to a portal page where they must answer a simple quiz to gain internet access. While waiting, users can chat with an AI assistant named **Kendo** — a blunt, grumpy, and easily startled character — powered by the Groq LLM API.
 
 ---
 

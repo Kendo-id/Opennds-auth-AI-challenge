@@ -3,17 +3,11 @@
 > **Captive portal berbasis OpenNDS dengan autentikasi kuis dan asisten AI interaktif**
 > 
 > *A captive portal built on OpenNDS with quiz-based authentication and an interactive AI assistant*
+
+
 [Preview HTML](https://htmlpreview.github.io/?https://kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
 ---
 
-  
-  ;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">Quiz + AI chat UI</text>
-</g>
-
-<!-- Arrow: Router -> Client -->
-<
-  
-   sans-serif;font-size:14px;font-weight:500;text-anchor:middle;dominant-baseline:auto">AI Cha
    
 
 ## 📖 Deskripsi / Description

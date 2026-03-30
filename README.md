@@ -3,7 +3,7 @@
 > **Captive portal berbasis OpenNDS dengan autentikasi kuis dan asisten AI interaktif**
 > 
 > *A captive portal built on OpenNDS with quiz-based authentication and an interactive AI assistant*
-[Preview HTML](https://htmlpreview.github.io/?https://kendo-id.github.io/Opennds-auth-AI-challenge/preview.html
+[Preview HTML](https://htmlpreview.github.io/?https://kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
 ---
 <svg width="100%" viewBox="0 0 680 580" xmlns="http://www.w3.org/2000/svg">
 <defs>

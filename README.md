@@ -1,6 +1,6 @@
 # OpenNDS FAS WiFi Captive Portal with AI Assistant
 
-> **Captive portal berbasis OpenNDS dengan autentikasi kuis dan asisten AI interaktif**
+> **Captive portal OpenNDS berbasis AI dengan autentikasi kuis dan asisten AI interaktif**
 > 
 > *A captive portal built on OpenNDS with quiz-based authentication and an interactive AI assistant*
 

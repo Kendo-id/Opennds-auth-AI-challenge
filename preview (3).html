@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Jangkrik AI — Portal WiFi Demo</title>
+<style>
+/* --- RESET --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #1c1917;
+  --surface:     #292524;
+  --surface-2:   #211f1d;
+  --border:      #3d3835;
+  --border-2:    #4a4542;
+  --accent:      #d97757;
+  --accent-h:    #e8896a;
+  --accent-soft: #3a2419;
+  --accent-glow: rgba(217,119,87,.22);
+  --text:        #f5f0eb;
+  --text-2:      #a8a29e;
+  --text-3:      #6b6560;
+  --green:       #4ade9b;
+  --green-soft:  #0f2d20;
+  --red:         #f87171;
+  --red-soft:    #2d0f0f;
+  --amber:       #fbbf24;
+  --amber-soft:  #2d1f00;
+  --radius-sm:   8px;
+  --radius:      14px;
+  --radius-lg:   20px;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
+  --shadow:      0 4px 16px rgba(0,0,0,.4), 0 1px 3px rgba(0,0,0,.3);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3);
+  --transition:  200ms cubic-bezier(.4,0,.2,1);
+  --font-sans:   ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* DEMO BANNER */
+.demo-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: linear-gradient(90deg, #7b2fff22, #00e8ff22);
+  border-bottom: 1px solid #7b2fff55;
+  text-align: center;
+  font-size: 11px; color: #a8a29e;
+  padding: 5px 16px;
+  backdrop-filter: blur(10px);
+  letter-spacing: .3px;
+}
+.demo-banner span { color: #00e8ff; font-weight: 600; }
+
+/* TOPBAR */
+.topbar {
+  position: fixed; top: 28px; left: 0; right: 0; z-index: 100;
+  height: 56px;
+  background: rgba(28,25,23,.88);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px) saturate(180%);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+}
+.topbar-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 600; color: var(--text);
+  text-decoration: none;
+}
+.topbar-logo { width: 36px; height: 28px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+.topbar-logo svg { width: 36px; overflow: visible; }
+.topbar-badge {
+  font-size: 11px; font-weight: 500;
+  color: var(--text-3); background: var(--surface-2);
+  border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px;
+  cursor: pointer; font-family: var(--font-sans);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.topbar-badge:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+
+/* ANIMATIONS */
+@keyframes goyang-pantat { 0%,100%{transform:rotate(0deg) translateY(0)} 15%{transform:rotate(-14deg) translateY(-2px)} 30%{transform:rotate(14deg) translateY(1px)} 45%{transform:rotate(-10deg) translateY(-1px)} 60%{transform:rotate(10deg) translateY(1px)} 75%{transform:rotate(-6deg) translateY(0)} }
+@keyframes goyang-kaki   { 0%,100%{transform:rotate(0deg)} 25%{transform:rotate(18deg)} 75%{transform:rotate(-18deg)} }
+@keyframes goyang-antena { 0%,100%{transform:rotate(0deg)} 30%{transform:rotate(-20deg)} 70%{transform:rotate(20deg)} }
+@keyframes naik-turun    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+@keyframes spin          { to{transform:rotate(360deg)} }
+@keyframes blink         { 0%,80%,100%{opacity:.3} 40%{opacity:1} }
+@keyframes slideUp       { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes popIn         { from{opacity:0;transform:scale(.5)} to{opacity:1;transform:scale(1)} }
+
+#cricket-antena-l{ transform-origin:-10px -60px; animation:goyang-antena 1.4s ease-in-out infinite; }
+#cricket-antena-r{ transform-origin:10px -60px;  animation:goyang-antena 1.4s ease-in-out infinite reverse; }
+#cricket-kaki-bl { transform-origin:-18px 36px;  animation:goyang-kaki .7s ease-in-out infinite; }
+#cricket-kaki-br { transform-origin:18px 36px;   animation:goyang-kaki .7s ease-in-out infinite reverse; }
+#cricket-kaki-ml { transform-origin:-22px 18px;  animation:goyang-kaki .7s ease-in-out infinite .1s; }
+#cricket-kaki-mr { transform-origin:22px 18px;   animation:goyang-kaki .7s ease-in-out infinite reverse .1s; }
+
+/* LAYOUT */
+.page-wrap { padding-top: 100px; padding-bottom: 48px; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; }
+.container  { width: 100%; max-width: 520px; padding: 0 16px; }
+
+/* HERO */
+.hero { text-align: center; padding: 32px 0 24px; }
+.hero-icon { width: 60px; height: 75px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; overflow: visible; }
+.hero-icon svg { width: 60px; overflow: visible; }
+.hero-title { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.2; letter-spacing: -.4px; margin-bottom: 8px; }
+.hero-sub { font-size: 14px; color: var(--text-2); }
+
+/* INFO CARD */
+.info-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; overflow-x: auto; gap: 0; scrollbar-width: none;
+}
+.info-card::-webkit-scrollbar { display: none; }
+.info-row { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; padding: 4px 14px; }
+.info-row + .info-row { border-left: 1px solid var(--border); }
+.info-row:first-child { padding-left: 0; }
+.info-row:last-child  { padding-right: 0; }
+.info-label { font-size: 9px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
+.info-val   { font-size: 12px; font-weight: 500; color: var(--text-2); font-family: ui-monospace, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* CARD */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 16px; }
+.card-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-header-icon { width: 32px; height: 32px; background: var(--accent-soft); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-header-icon svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.card-header-text h2 { font-size: 15px; font-weight: 600; color: var(--text); }
+.card-header-text p  { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+.card-body { padding: 20px 22px; }
+
+/* CHIPS */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.chip  { padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border-2); background: var(--surface); font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 5px; white-space: nowrap; user-select: none; }
+.chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+.chip-icon { font-size: 14px; line-height: 1; }
+
+/* QUESTION */
+.question-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; min-height: 80px; position: relative; }
+.question-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.question-cat-badge { font-size: 10px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(217,119,87,.25); }
+.question-skip { background: none; border: none; cursor: pointer; font-size: 11px; color: var(--text-3); display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; transition: var(--transition); }
+.question-skip:hover { background: var(--border); color: var(--text-2); }
+.question-skip svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.question-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.55; }
+.question-loading { display: flex; align-items: center; gap: 10px; color: var(--text-3); font-size: 13px; }
+.question-hint { font-size: 12px; color: var(--amber); background: var(--amber-soft); border: 1px solid #78500a; border-radius: var(--radius-sm); padding: 8px 12px; margin-top: 10px; display: none; }
+
+/* INPUT */
+.input-wrap { position: relative; }
+.answer-input { width: 100%; padding: 12px 50px 12px 16px; border: 2px solid var(--border-2); border-radius: var(--radius); background: var(--surface); font-family: var(--font-sans); font-size: 15px; color: var(--text); transition: border-color var(--transition), box-shadow var(--transition); outline: none; }
+.answer-input::placeholder { color: var(--text-3); }
+.answer-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.answer-input:disabled { opacity: .5; cursor: not-allowed; }
+.input-send { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; background: var(--accent); border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--transition), transform var(--transition); }
+.input-send:hover { background: var(--accent-h); transform: translateY(-50%) scale(1.05); }
+.input-send:disabled { background: var(--border-2); cursor: not-allowed; transform: translateY(-50%); }
+.input-send svg { width: 16px; height: 16px; fill: #fff; }
+
+/* FEEDBACK */
+.feedback { border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; font-weight: 500; margin-top: 12px; display: none; align-items: center; gap: 8px; animation: slideUp .2s ease; }
+.feedback.correct { background: var(--green-soft); color: var(--green); border: 1px solid #1a4d35; }
+.feedback.wrong   { background: var(--red-soft);   color: var(--red);   border: 1px solid #5a1a1a; }
+.feedback.info    { background: var(--amber-soft);  color: var(--amber); border: 1px solid #78500a; }
+.feedback-icon { font-size: 16px; flex-shrink: 0; }
+
+/* PROGRESS */
+.progress-wrap    { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-top: 1px solid var(--border); background: var(--surface-2); }
+.progress-bar-bg  { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill{ height: 100%; background: var(--accent); border-radius: 3px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+.progress-label   { font-size: 12px; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+
+/* CHAT */
+.chat-toggle-btn { width: 100%; padding: 13px 18px; background: var(--surface); border: 1.5px dashed var(--border-2); border-radius: var(--radius-lg); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--text-2); transition: var(--transition); margin-bottom: 16px; }
+.chat-toggle-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.chat-toggle-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.chat-card { display: none; }
+.chat-card.open { display: block; }
+.chat-messages { padding: 16px 18px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; scrollbar-color: var(--border-2) transparent; }
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+.msg-row { display: flex; gap: 10px; align-items: flex-end; animation: slideUp .2s ease; }
+.msg-row.user { flex-direction: row-reverse; }
+.msg-avatar { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.msg-avatar.ai { background: linear-gradient(135deg, var(--accent), #e8976e); color: #fff; font-weight: 700; font-size: 11px; }
+.msg-avatar.user-av { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); }
+.msg-bubble { max-width: 78%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.55; }
+.msg-row.ai   .msg-bubble { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
+.msg-row.user .msg-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+.msg-typing { display: flex; align-items: center; gap: 4px; padding: 10px 14px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); animation: blink 1.2s infinite; }
+.dot:nth-child(2) { animation-delay: .2s; }
+.dot:nth-child(3) { animation-delay: .4s; }
+.chat-input-row { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-end; }
+.chat-textarea { flex: 1; resize: none; min-height: 40px; max-height: 120px; border: 1.5px solid var(--border-2); border-radius: var(--radius-sm); padding: 9px 12px; font-family: var(--font-sans); font-size: 14px; color: var(--text); background: var(--surface); outline: none; transition: border-color var(--transition), box-shadow var(--transition); line-height: 1.4; overflow-y: auto; }
+.chat-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.chat-textarea::placeholder { color: var(--text-3); }
+.chat-send { width: 38px; height: 38px; border: none; border-radius: var(--radius-sm); background: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background var(--transition), transform var(--transition); }
+.chat-send:hover { background: var(--accent-h); transform: scale(1.06); }
+.chat-send:disabled { background: var(--border-2); cursor: not-allowed; transform: none; }
+.chat-send svg { width: 15px; height: 15px; fill: #fff; }
+
+/* ABOUT MODAL */
+.about-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(28,25,23,.7); backdrop-filter: blur(8px); align-items: flex-end; justify-content: center; padding: 0; }
+.about-overlay.open { display: flex; }
+.about-sheet { width: 100%; max-width: 520px; background: var(--surface); border: 1px solid var(--border-2); border-radius: var(--radius-lg) var(--radius-lg) 0 0; box-shadow: var(--shadow-lg); max-height: 85dvh; display: flex; flex-direction: column; animation: slideUpSheet .28s cubic-bezier(.4,0,.2,1); }
+@keyframes slideUpSheet { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+.about-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.about-header-left { display: flex; align-items: center; gap: 10px; }
+.about-icon-wrap { width: 32px; height: 32px; background: var(--accent-soft); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.about-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.about-close { background: none; border: none; cursor: pointer; color: var(--text-3); padding: 6px; border-radius: 6px; transition: background var(--transition), color var(--transition); display: flex; align-items: center; justify-content: center; }
+.about-close:hover { background: var(--border); color: var(--text); }
+.about-body { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scrollbar-width: thin; scrollbar-color: var(--border-2) transparent; }
+.about-section { display: flex; gap: 14px; align-items: flex-start; }
+.about-section-icon { font-size: 22px; flex-shrink: 0; width: 38px; height: 38px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; line-height: 1; }
+.about-section h3 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+.about-section p  { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.about-section em { color: var(--accent); font-style: normal; }
+.about-section strong { color: var(--text); }
+.about-divider { height: 1px; background: var(--border); margin: 0 -20px; }
+.about-footer { display: flex; align-items: center; gap: 10px; padding-top: 2px; padding-bottom: 4px; }
+.about-footer-badge { font-size: 11px; font-weight: 600; background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(217,119,87,.3); padding: 2px 10px; border-radius: 20px; }
+.about-footer-text  { font-size: 12px; color: var(--text-3); }
+
+/* SUCCESS FLASH */
+.success-flash { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(28,25,23,.96); backdrop-filter: blur(20px); align-items: center; justify-content: center; flex-direction: column; gap: 20px; text-align: center; padding: 32px; }
+.success-flash.show { display: flex; }
+.success-anim { width: 80px; height: 80px; background: linear-gradient(135deg, #3a7c5f, #4fa07e); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(74,222,155,.25); animation: popIn .4s cubic-bezier(.34,1.56,.64,1); }
+.success-anim svg { width: 40px; height: 40px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.success-title { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
+.success-sub { font-size: 14px; color: var(--text-2); max-width: 280px; }
+.success-redirect-info { font-size: 12px; color: var(--text-3); background: var(--surface-2); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; }
+
+/* ── STATUS CLIENT PAGE ─────────────────────────────────── */
+#statusPage { display: none; }
+#statusPage.show { display: block; }
+
+/* STAT GRID */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat-item  { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.stat-label { font-size: 10px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+.stat-val   { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.stat-val.mono  { font-family: ui-monospace, monospace; font-size: 11px; line-height: 1.5; }
+.stat-val.green { color: var(--green); }
+.stat-val.amber { color: var(--amber); }
+.stat-full  { grid-column: 1/-1; }
+
+/* STATUS BADGE */
+.status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.status-badge.online { background: var(--green-soft); color: var(--green); border: 1px solid #1a4d35; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; animation: pdot 2s ease-in-out infinite; }
+@keyframes pdot { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* DIVIDER & ADVANCED TOGGLE */
+.divider { height: 1px; background: var(--border); margin: 20px 0 16px; }
+.adv-btn { width: 100%; padding: 11px 16px; background: var(--surface-2); border: 1.5px dashed var(--border-2); border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--text-2); transition: var(--transition); }
+.adv-btn:hover, .adv-btn.open { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.adv-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .28s; }
+.adv-btn.open svg { transform: rotate(180deg); }
+.adv-body { max-height: 0; overflow: hidden; transition: max-height .35s cubic-bezier(.4,0,.2,1); }
+.adv-body.open { max-height: 700px; }
+.adv-inner { padding-top: 16px; }
+
+/* LOGOUT / REFRESH BUTTONS */
+.logout-btn  { width: 100%; padding: 13px; background: var(--red-soft); border: 1.5px solid #5a1a1a; border-radius: var(--radius); cursor: pointer; font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--red); transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.logout-btn:hover { background: #3d1010; border-color: var(--red); }
+.logout-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.refresh-btn { width: 100%; padding: 11px; background: none; border: 1.5px solid var(--border-2); border-radius: var(--radius); cursor: pointer; font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--text-2); transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+.refresh-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.refresh-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* SPINNER */
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+
+/* FOOTER */
+.portal-footer { text-align: center; font-size: 11px; color: var(--text-3); margin-top: 12px; padding-bottom: 8px; line-height: 1.6; }
+.portal-footer a { color: var(--accent); text-decoration: none; }
+.portal-footer a:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 22px; }
+  .card-body  { padding: 16px 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">
+  🦗 <span>PREVIEW DEMO</span> — Jangkrik AI Portal · Semua fitur interaktif, tanpa koneksi server
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">
+      <svg viewBox="-5 -5 35 30" fill="none" overflow="visible">
+        <defs><filter id="ng2"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <ellipse cx="9" cy="13" rx="8" ry="6" fill="rgba(0,232,255,.18)" stroke="#00e8ff" stroke-width=".9" filter="url(#ng2)"/>
+        <ellipse cx="7" cy="12" rx="3.5" ry="2.5" fill="rgba(0,232,255,.12)"/>
+        <line x1="4" y1="10" x2="14" y2="10" stroke="#00e8ff" stroke-width=".4" opacity=".35"/>
+        <line x1="3" y1="13" x2="15" y2="13" stroke="#00e8ff" stroke-width=".4" opacity=".3"/>
+        <path d="M1 14 Q-2 16 -4 18" stroke="#00e8ff" stroke-width=".7" stroke-linecap="round" opacity=".7"/>
+        <path d="M1 13 Q-2 13 -4 12" stroke="#00ffc8" stroke-width=".6" stroke-linecap="round" opacity=".6"/>
+        <ellipse cx="17" cy="11" rx="4" ry="3.5" fill="rgba(0,255,200,.15)" stroke="#00ffc8" stroke-width=".8"/>
+        <path d="M14,8 Q17,6 20,8 Q21,10 20,12 Q17,13 14,12 Q13,10 14,8Z" fill="rgba(0,255,200,.1)" stroke="#00ffc8" stroke-width=".6"/>
+        <circle cx="22" cy="8" r="3" fill="rgba(123,47,255,.2)" stroke="#7b2fff" stroke-width=".7"/>
+        <ellipse cx="23.2" cy="7" rx="1.4" ry="1.7" fill="rgba(0,232,255,.3)" stroke="#00e8ff" stroke-width=".5"/>
+        <circle cx="23.4" cy="6.7" r=".6" fill="#00e8ff"><animate attributeName="opacity" values="1;.2;1" dur="2s" repeatCount="indefinite"/></circle>
+        <path d="M21 6 Q23 2 26 0" stroke="#00e8ff" stroke-width=".7" stroke-linecap="round"/>
+        <path d="M22 5.5 Q24 2 27 1" stroke="#00e8ff" stroke-width=".5" stroke-linecap="round" opacity=".5"/>
+        <circle cx="26" cy="0" r="1" fill="#00e8ff"><animate attributeName="r" values="1;1.5;1" dur="1.5s" repeatCount="indefinite"/></circle>
+        <circle cx="27" cy="1" r=".8" fill="#7b2fff" opacity=".8"><animate attributeName="r" values=".8;1.3;.8" dur="1.5s" begin=".4s" repeatCount="indefinite"/></circle>
+        <path d="M14 8 Q12 3 15 2 Q19 1 20 8Z" fill="rgba(0,232,255,.07)" stroke="#00e8ff" stroke-width=".4"/>
+        <path d="M16 13 Q13 16 11 18" stroke="#00ffc8" stroke-width=".8" stroke-linecap="round"/>
+        <path d="M16 13 Q19 15 20 18" stroke="#00ffc8" stroke-width=".8" stroke-linecap="round"/>
+        <path d="M10 16 Q7 19 5 21" stroke="#00e8ff" stroke-width=".7" stroke-linecap="round"/>
+        <path d="M10 16 Q12 19 13 22" stroke="#00e8ff" stroke-width=".7" stroke-linecap="round"/>
+        <path d="M4 12 Q0 7 -1 2" stroke="#00e8ff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M-1 2 Q-2 8 1 14" stroke="#00e8ff" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="-1.5" y1="4" x2="-4" y2="3" stroke="#00e8ff" stroke-width=".6" opacity=".6"/>
+        <line x1="-1.5" y1="7" x2="-4" y2="7" stroke="#00e8ff" stroke-width=".6" opacity=".5"/>
+        <line x1="-1" y1="10" x2="-3.5" y2="11" stroke="#00e8ff" stroke-width=".5" opacity=".5"/>
+      </svg>
+    </div>
+    Jangkrik AI
+  </div>
+  <button class="topbar-badge" onclick="openAbout()">About</button>
+</header>
+
+<!-- ABOUT MODAL -->
+<div id="aboutOverlay" class="about-overlay" onclick="closeAboutOutside(event)">
+  <div class="about-sheet">
+    <div class="about-header">
+      <div class="about-header-left">
+        <div class="about-icon-wrap">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--accent)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <span class="about-title">Tentang Portal Ini</span>
+      </div>
+      <button class="about-close" onclick="closeAbout()">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="about-body">
+      <div class="about-section"><div class="about-section-icon">🌐</div><div><h3>Apa itu WiFi Portal?</h3><p>Portal ini adalah gerbang otentikasi jaringan WiFi — dikenal sebagai <em>Captive Portal</em>. Sebelum perangkatmu terhubung ke internet, kamu diminta menyelesaikan satu tantangan singkat sebagai verifikasi.</p></div></div>
+      <div class="about-section"><div class="about-section-icon">🧠</div><div><h3>Bagaimana Cara Kerjanya?</h3><p>Pilih kategori soal (Umum, Tebak, atau Religi), lalu jawab pertanyaan yang dihasilkan oleh AI. Jawab dengan benar sesuai jumlah yang ditentukan, dan akses internet akan langsung terbuka.</p></div></div>
+      <div class="about-section"><div class="about-section-icon">🤖</div><div><h3>Bantuan AI</h3><p>Kesulitan menjawab? Gunakan fitur <strong>Tanya Kendo</strong> di bagian bawah halaman. Asisten AI siap memberikan petunjuk.</p></div></div>
+      <div class="about-section"><div class="about-section-icon">🔒</div><div><h3>Privasi &amp; Data</h3><p>Sistem ini mencatat IP dan MAC address perangkatmu untuk keperluan autentikasi. Data tidak disimpan permanen dan hanya digunakan selama sesi berlangsung.</p></div></div>
+      <div class="about-divider"></div>
+      <div class="about-footer"><span class="about-footer-badge">Jangkrik AI</span><span class="about-footer-text">Powered by openNDS FAS &amp; AI</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PORTAL PAGE ══ -->
+<div id="portalPage">
+<!-- MAIN -->
+<div class="page-wrap">
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-icon">
+      <svg viewBox="-38 -82 76 190" fill="none" overflow="visible">
+        <defs>
+          <filter id="bioGlow"><feGaussianBlur stdDeviation="1.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <radialGradient id="gAura2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00e8ff" stop-opacity=".1"/><stop offset="100%" stop-color="#00e8ff" stop-opacity="0"/></radialGradient>
+        </defs>
+        <g id="cricket-wrapper">
+          <ellipse cx="0" cy="20" rx="34" ry="50" fill="url(#gAura2)"><animate attributeName="opacity" values=".5;1;.5" dur="1.4s" repeatCount="indefinite"/></ellipse>
+          <g id="cricket-antena-l">
+            <path d="M-10,-60 Q-20,-72 -26,-82" stroke="#00e8ff" stroke-width="1.1" stroke-linecap="round"/>
+            <circle cx="-26" cy="-82" r="2" fill="#00e8ff" filter="url(#bioGlow)"><animate attributeName="r" values="1.8;2.8;1.8" dur="1.4s" repeatCount="indefinite"/></circle>
+          </g>
+          <g id="cricket-antena-r">
+            <path d="M10,-60 Q20,-72 26,-82" stroke="#7b2fff" stroke-width="1.1" stroke-linecap="round"/>
+            <circle cx="26" cy="-82" r="2" fill="#7b2fff" filter="url(#bioGlow)"><animate attributeName="r" values="1.8;2.8;1.8" dur="1.4s" begin=".15s" repeatCount="indefinite"/></circle>
+          </g>
+          <g id="cricket-body">
+            <ellipse cx="0" cy="-44" rx="22" ry="18" fill="rgba(0,232,255,.07)" stroke="#00e8ff" stroke-width="1.1"/>
+            <ellipse cx="-16" cy="-48" rx="7" ry="8" fill="rgba(0,232,255,.2)" stroke="#00e8ff" stroke-width=".9"/>
+            <circle cx="-17" cy="-50" r="2.8" fill="#00e8ff" filter="url(#bioGlow)"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></circle>
+            <circle cx="-15" cy="-49" r="1" fill="#ffffff" opacity=".9"/>
+            <ellipse cx="16" cy="-48" rx="7" ry="8" fill="rgba(123,47,255,.2)" stroke="#7b2fff" stroke-width=".9"/>
+            <circle cx="17" cy="-50" r="2.8" fill="#7b2fff" filter="url(#bioGlow)"><animate attributeName="opacity" values=".3;1;.3" dur="1.4s" repeatCount="indefinite"/></circle>
+            <circle cx="15" cy="-49" r="1" fill="#ffffff" opacity=".9"/>
+            <path d="M-6,-28 Q0,-24 6,-28" stroke="#00ffc8" stroke-width=".8" stroke-linecap="round"/>
+            <path d="M-24,-26 Q-28,-14 -24,0 Q-16,6 0,8 Q16,6 24,0 Q28,-14 24,-26 Q16,-32 0,-34 Q-16,-32 -24,-26Z" fill="rgba(0,255,200,.06)" stroke="#00ffc8" stroke-width="1"/>
+            <ellipse cx="0" cy="20" rx="18" ry="14" fill="rgba(0,232,255,.05)" stroke="#00e8ff" stroke-width=".9"/>
+            <path d="M-14,30 Q-16,58 -9,74 Q-5,82 0,84 Q5,82 9,74 Q16,58 14,30Z" fill="rgba(0,232,255,.08)" stroke="#00e8ff" stroke-width="1.1"/>
+            <line x1="-13" y1="42" x2="13" y2="42" stroke="#00e8ff" stroke-width=".5" opacity=".3"/>
+            <line x1="-14" y1="54" x2="14" y2="54" stroke="#00e8ff" stroke-width=".5" opacity=".3"/>
+            <path d="M-20,-4 Q-32,2 -40,12" stroke="#00ffc8" stroke-width="1.1" stroke-linecap="round"/>
+            <path d="M-40,12 Q-44,20 -42,28" stroke="#00ffc8" stroke-width=".8" stroke-linecap="round"/>
+          </g>
+          <!-- tangan kopi -->
+          <g id="cricket-kopi">
+            <animateTransform attributeName="transform" type="rotate" values="0 20 -4; 0 20 -4; -7 20 -4; -7 20 -4; 0 20 -4" keyTimes="0;0.35;0.52;0.68;1" dur="3.5s" repeatCount="indefinite"/>
+            <path d="M20,-4 Q13,-14 5,-26" stroke="#00ffc8" stroke-width="1.1" stroke-linecap="round"/>
+            <g transform="translate(5,-26)">
+              <path d="M-5,0 L-4,8 L4,8 L5,0 Z" fill="rgba(0,232,255,.2)" stroke="#00e8ff" stroke-width=".7"/>
+              <line x1="-5" y1="0" x2="5" y2="0" stroke="#00e8ff" stroke-width=".9"/>
+              <path d="M-3.5,5.5 L3.5,5.5" stroke="rgba(80,40,10,.9)" stroke-width="2"/>
+              <path d="M5,1 Q9,2 9,4 Q9,7 5,7" stroke="#00e8ff" stroke-width=".7" fill="none"/>
+              <path d="M-2,-1 Q-3,-4 -2,-7" stroke="#00e8ff" stroke-width=".5" stroke-linecap="round" fill="none"><animate attributeName="opacity" values="0;.7;0" dur="1.3s" repeatCount="indefinite" begin="0s"/></path>
+              <path d="M0,-1 Q1,-4 0,-7" stroke="#00ffc8" stroke-width=".5" stroke-linecap="round" fill="none"><animate attributeName="opacity" values="0;.7;0" dur="1.3s" repeatCount="indefinite" begin="0.4s"/></path>
+              <path d="M2,-1 Q3,-4 2,-7" stroke="#00e8ff" stroke-width=".5" stroke-linecap="round" fill="none"><animate attributeName="opacity" values="0;.7;0" dur="1.3s" repeatCount="indefinite" begin="0.8s"/></path>
+            </g>
+          </g>
+          <g id="cricket-kaki-ml"><path d="M-22,18 Q-36,20 -46,30" stroke="#00e8ff" stroke-width="1" stroke-linecap="round"/><path d="M-46,30 Q-50,38 -46,46" stroke="#00e8ff" stroke-width=".7" stroke-linecap="round"/></g>
+          <g id="cricket-kaki-mr"><path d="M22,18 Q36,20 46,30" stroke="#00e8ff" stroke-width="1" stroke-linecap="round"/><path d="M46,30 Q50,38 46,46" stroke="#00e8ff" stroke-width=".7" stroke-linecap="round"/></g>
+          <g id="cricket-kaki-bl"><path d="M-18,36 Q-38,28 -52,16" stroke="#00e8ff" stroke-width="3" stroke-linecap="round"/><path d="M-52,16 Q-56,32 -50,48" stroke="#00e8ff" stroke-width="2.2" stroke-linecap="round"/><path d="M-50,48 Q-46,56 -42,62" stroke="#00e8ff" stroke-width="1.5" stroke-linecap="round"/></g>
+          <g id="cricket-kaki-br"><path d="M18,36 Q38,28 52,16" stroke="#7b2fff" stroke-width="3" stroke-linecap="round"/><path d="M52,16 Q56,32 50,48" stroke="#7b2fff" stroke-width="2.2" stroke-linecap="round"/><path d="M50,48 Q46,56 42,62" stroke="#7b2fff" stroke-width="1.5" stroke-linecap="round"/></g>
+        </g>
+      </svg>
+    </div>
+    <br>
+    <h1 class="hero-title">Jangkrik AI Hotspot</h1>
+    <p class="hero-sub">Jawab tantangan untuk akses internet gratis</p>
+  </div>
+
+  <!-- CLIENT INFO -->
+  <div class="info-card">
+    <div class="info-row"><span class="info-label">IP Address</span><span class="info-val">192.168.1.42</span></div>
+    <div class="info-row"><span class="info-label">MAC Address</span><span class="info-val">A4:C3:F0:7B:2E:11</span></div>
+    <div class="info-row"><span class="info-label">Gateway</span><span class="info-val">192.168.1.1</span></div>
+    <div class="info-row"><span class="info-label">Waktu</span><span class="info-val" id="clock">--:--</span></div>
+  </div>
+
+  <!-- QUIZ CARD -->
+  <div class="card" id="quizCard">
+    <div class="card-header">
+      <div class="card-header-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></div>
+      <div class="card-header-text"><h2>CHALLENGE</h2><p>Pilih kategori &amp; jawab pertanyaan AI</p></div>
+    </div>
+    <div class="card-body">
+      <div class="chips" id="chips">
+        <button class="chip active" data-cat="general" onclick="selectCat(this)"><span class="chip-icon">🇮🇩</span> Umum</button>
+        <button class="chip" data-cat="tebak" onclick="selectCat(this)"><span class="chip-icon">🧩</span> Tebak</button>
+        <button class="chip" data-cat="religi" onclick="selectCat(this)"><span class="chip-icon">☯</span> Religi</button>
+        <button class="chip" style="margin-left:auto" onclick="loadQuestion()"><span class="chip-icon">✨</span> Soal Baru</button>
+      </div>
+      <div class="question-box" id="qBox">
+        <div class="question-loading" id="qLoading"><div class="spinner"></div><span>Menyiapkan soal...</span></div>
+        <div id="qInner" style="display:none">
+          <div class="question-top">
+            <span class="question-cat-badge" id="qCatBadge">Umum</span>
+            <button class="question-skip" onclick="loadQuestion()">
+              <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              Ganti soal
+            </button>
+          </div>
+          <p class="question-text" id="qText"></p>
+          <div class="question-hint" id="qHint"></div>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <input type="text" class="answer-input" id="answerInput" placeholder="Ketik jawaban kamu..." disabled autocomplete="off" autocorrect="off" onkeydown="if(event.key==='Enter'){event.preventDefault();submitAnswer();}">
+        <button class="input-send" id="sendBtn" disabled onclick="submitAnswer()">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+      <div class="feedback" id="feedback">
+        <span class="feedback-icon" id="fbIcon">✓</span>
+        <span id="fbMsg"></span>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      <span class="progress-label" id="progressLabel">0 / 3</span>
+    </div>
+  </div>
+
+  <!-- CHAT TOGGLE -->
+  <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Tanya Kendo - butuh bantuan?
+  </button>
+
+  <!-- CHAT CARD -->
+  <div class="card chat-card" id="chatCard">
+    <div class="card-header">
+      <div class="card-header-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <div class="card-header-text"><h2>Kendo Assistant</h2><p>Ada yang bisa dibantu?</p></div>
+    </div>
+    <div class="chat-messages" id="chatMsgs">
+      <div class="msg-row ai">
+        <div class="msg-avatar ai">Ken</div>
+        <div class="msg-bubble">Halo! Saya Kendo 🦗 Butuh bantuan menjawab soal? Tanya aja ya! 😊</div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <textarea class="chat-textarea" id="chatInput" placeholder="Tulis pesan..." rows="1" onkeydown="chatKeydown(event)" oninput="autoResize(this)"></textarea>
+      <button class="chat-send" id="chatSendBtn" onclick="sendChat()">
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="portal-footer">
+    Didukung oleh AI &middot; Portal dibuat dengan ❤<br>
+    <a href="https://github.com/Kendo-id/Opennds-auth-AI-challenge" target="_blank">Kendo Assistant · GitHub</a>
+  </div>
+
+</div>
+</div>
+</div><!-- /portalPage -->
+
+<!-- SUCCESS FLASH (transisi sebelum pindah ke status page) -->
+<div class="success-flash" id="successFlash">
+  <div class="success-anim"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+  <div class="success-title">Akses Diberikan! 🎉</div>
+  <p class="success-sub">Jawaban benar semua! Mengalihkan ke halaman status...</p>
+  <span class="success-redirect-info">⏳ Sebentar ya...</span>
+</div>
+
+<!-- ══ STATUS CLIENT PAGE ══════════════════════════════════════════ -->
+<div id="statusPage">
+<div class="page-wrap">
+<div class="container">
+
+  <!-- HERO topbar diganti inline karena topbar fixed sudah ada -->
+  <div class="hero" style="padding:16px 0 12px">
+    <h1 class="hero-title" style="font-size:20px">Status Sesi</h1>
+    <p class="hero-sub">Koneksi aktif — <span class="status-badge online"><span class="status-dot"></span>Online</span></p>
+  </div>
+
+  <!-- CLIENT INFO STRIP -->
+  <div class="info-card">
+    <div class="info-row"><span class="info-label">IP Address</span><span class="info-val">192.168.1.42</span></div>
+    <div class="info-row"><span class="info-label">MAC</span><span class="info-val">A4:C3:F0:7B:2E</span></div>
+    <div class="info-row"><span class="info-label">Gateway</span><span class="info-val">192.168.1.1</span></div>
+    <div class="info-row"><span class="info-label">Versi NDS</span><span class="info-val">10.2.1</span></div>
+  </div>
+
+  <!-- REFRESH + LOGOUT -->
+  <div class="card">
+    <div class="card-body" style="padding:14px 22px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="refresh-btn" style="margin-top:0;flex:1" onclick="refreshStatus()">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+        Refresh Status
+      </button>
+      <button class="logout-btn" style="flex:1" onclick="doLogout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- SESI INFO -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="card-header-text"><h2>Informasi Sesi</h2><p>Detail koneksi aktif saat ini</p></div>
+    </div>
+    <div class="card-body">
+      <div class="stat-grid">
+        <div class="stat-item"><div class="stat-label">Mulai Sesi</div><div class="stat-val mono" id="st-mulai">--</div></div>
+        <div class="stat-item"><div class="stat-label">Durasi</div><div class="stat-val green" id="st-durasi">0j 0m 0d</div></div>
+        <div class="stat-item"><div class="stat-label">Akhir Sesi</div><div class="stat-val mono">Unlimited</div></div>
+        <div class="stat-item"><div class="stat-label">Terakhir Aktif</div><div class="stat-val mono" id="st-aktif">--</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA USAGE -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="card-header-text"><h2>Penggunaan Data</h2><p>Download &amp; upload sesi ini</p></div>
+    </div>
+    <div class="card-body">
+      <div class="stat-grid">
+        <div class="stat-item"><div class="stat-label">⬇ Download</div><div class="stat-val" id="st-dl">0 KB</div></div>
+        <div class="stat-item"><div class="stat-label">⬆ Upload</div><div class="stat-val" id="st-ul">0 KB</div></div>
+        <div class="stat-item"><div class="stat-label">Avg Download</div><div class="stat-val amber" id="st-dl-avg">0 Kb/s</div></div>
+        <div class="stat-item"><div class="stat-label">Avg Upload</div><div class="stat-val amber" id="st-ul-avg">0 Kb/s</div></div>
+        <div class="stat-item"><div class="stat-label">Kuota Download</div><div class="stat-val">Unlimited</div></div>
+        <div class="stat-item"><div class="stat-label">Kuota Upload</div><div class="stat-val">Unlimited</div></div>
+      </div>
+
+      <div class="divider"></div>
+      <button class="adv-btn" id="advBtn" onclick="toggleAdv()">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        Detail Lanjutan
+      </button>
+      <div class="adv-body" id="advBody">
+        <div class="adv-inner">
+          <div class="stat-grid">
+            <div class="stat-item"><div class="stat-label">Tipe Client</div><div class="stat-val mono">Mozilla/5.0</div></div>
+            <div class="stat-item"><div class="stat-label">Interface</div><div class="stat-val mono">LocalZone: wlan0</div></div>
+            <div class="stat-item"><div class="stat-label">DL Rate Limit</div><div class="stat-val">Unlimited</div></div>
+            <div class="stat-item"><div class="stat-label">UL Rate Limit</div><div class="stat-val">Unlimited</div></div>
+            <div class="stat-item stat-full"><div class="stat-label">Gateway Address</div><div class="stat-val mono">192.168.1.1:2050</div></div>
+            <div class="stat-item stat-full"><div class="stat-label">Versi openNDS</div><div class="stat-val mono">openNDS 10.2.1</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="portal-footer">
+    Didukung oleh AI &middot; Portal dibuat dengan ❤<br>
+    <a href="https://github.com/Kendo-id/Opennds-auth-AI-challenge" target="_blank">Kendo Assistant · GitHub</a>
+    &nbsp;·&nbsp; <a href="#" onclick="resetDemo();return false">↩ Kembali ke Portal</a>
+  </div>
+
+</div>
+</div>
+</div><!-- /statusPage -->
+
+<script>
+// ── CLOCK ─────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── QUIZ DATA ─────────────────────────────────────────────────
+const REQUIRED = 3;
+const questions = {
+  general: [
+    { q: 'Apa ibu kota Indonesia?', keywords: ['jakarta'], hint: 'Kota besar di pulau Jawa.' },
+    { q: 'Berapa jumlah provinsi di Indonesia saat ini?', keywords: ['38'], hint: 'Tambah beberapa provinsi baru dari Papua.' },
+    { q: 'Siapa presiden pertama Indonesia?', keywords: ['soekarno', 'sukarno', 'ir soekarno'], hint: 'Beliau juga dikenal sebagai Bung Karno.' },
+    { q: 'Apa nama mata uang Indonesia?', keywords: ['rupiah'], hint: 'Kodenya IDR.' },
+    { q: 'Pulau terbesar di Indonesia adalah?', keywords: ['kalimantan', 'borneo'], hint: 'Berbagi pulau dengan Malaysia dan Brunei.' },
+    { q: 'Apa nama danau terbesar di Indonesia?', keywords: ['toba', 'danau toba'], hint: 'Ada di Sumatera Utara.' },
+    { q: 'Indonesia merdeka pada tanggal berapa?', keywords: ['17 agustus', '17-8', '17/8', '1945'], hint: 'Tahun 1945, bulan ke-8.' },
+    { q: 'Apa nama maskapai penerbangan nasional Indonesia?', keywords: ['garuda', 'garuda indonesia'], hint: 'Namanya diambil dari burung mitologi Hindu.' },
+  ],
+  tebak: [
+    { q: 'Saya memiliki tangan tapi tidak bisa bertepuk tangan, dan memiliki muka tapi tidak bisa tersenyum. Apa saya?', keywords: ['jam', 'arloji', 'waktu', 'clock'], hint: 'Kamu meliriknya untuk mengetahui waktu.' },
+    { q: 'Semakin banyak diambil, semakin besar ukuranku. Apa aku?', keywords: ['lubang', 'galian', 'sumur'], hint: 'Coba gali tanah.' },
+    { q: 'Apa yang selalu ada di depan kamu, tapi tidak bisa dilihat?', keywords: ['masa depan', 'depan', 'future'], hint: 'Berhubungan dengan waktu.' },
+    { q: 'Aku punya kepala dan ekor, tapi tidak punya badan. Apa aku?', keywords: ['koin', 'uang logam'], hint: 'Digunakan untuk transaksi.' },
+    { q: 'Apa yang lebih besar ketika terbalik?', keywords: ['angka 6', '6', 'enam', 'nomor 6'], hint: 'Ini tentang angka.' },
+    { q: 'Barang apa yang kalau dibuang sayang, tapi kalau disimpan tidak ada gunanya?', keywords: ['nama', 'nama baik'], hint: 'Ini bukan benda fisik.' },
+    { q: 'Apa yang bisa berlari tapi tidak punya kaki?', keywords: ['air', 'sungai', 'waktu'], hint: 'Di sungai ada ini.' },
+  ],
+  religi: [
+    { q: 'Apa nama kitab suci agama Islam?', keywords: ['alquran', "al-qur'an", 'quran', "al quran"], hint: 'Wahyu Allah kepada Nabi Muhammad.' },
+    { q: 'Berapa jumlah rakaat sholat Dzuhur?', keywords: ['4', 'empat'], hint: 'Lebih dari Subuh, kurang dari tidak ada.' },
+    { q: 'Apa nama kitab suci agama Kristen?', keywords: ['alkitab', 'bible', 'injil'], hint: 'Terdiri dari Perjanjian Lama dan Baru.' },
+    { q: 'Siapa nabi terakhir dalam Islam?', keywords: ['muhammad', 'nabi muhammad', 'rasulullah'], hint: 'Beliau lahir di Mekah.' },
+    { q: 'Apa nama bulan puasa dalam Islam?', keywords: ['ramadan', 'ramadhan', 'ramadlan'], hint: 'Bulan ke-9 dalam kalender Hijriyah.' },
+    { q: 'Berapa jumlah rukun Islam?', keywords: ['5', 'lima'], hint: 'Syahadat, sholat, zakat, puasa, haji.' },
+    { q: 'Apa nama tempat ibadah umat Hindu?', keywords: ['pura', 'mandir'], hint: 'Banyak ditemukan di Bali.' },
+  ]
+};
+
+// ── STATE ─────────────────────────────────────────────────────
+let correctCount = 0;
+let currentCat   = 'general';
+let currentQ     = null;
+let isLoading    = false;
+let chatOpen     = false;
+
+const catLabels = { general: 'Umum', tebak: 'Tebak', religi: 'Religi' };
+
+// ── INIT ──────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => { loadQuestion(); });
+
+// ── CATEGORY ─────────────────────────────────────────────────
+function selectCat(btn) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  currentCat = btn.dataset.cat;
+  loadQuestion();
+}
+
+// ── LOAD QUESTION ─────────────────────────────────────────────
+function loadQuestion() {
+  if (isLoading) return;
+  isLoading = true;
+  hideFeedback();
+  setInput(false);
+  setQLoading(true);
+
+  setTimeout(() => {
+    const pool = questions[currentCat];
+    currentQ   = pool[Math.floor(Math.random() * pool.length)];
+    document.getElementById('qCatBadge').textContent = catLabels[currentCat];
+    document.getElementById('qText').textContent      = currentQ.q;
+    document.getElementById('qHint').style.display    = 'none';
+    setQLoading(false);
+    setInput(true);
+    document.getElementById('answerInput').focus();
+    isLoading = false;
+  }, 600);
+}
+
+function setQLoading(yes) {
+  document.getElementById('qLoading').style.display = yes ? 'flex' : 'none';
+  document.getElementById('qInner').style.display   = yes ? 'none' : 'block';
+}
+
+function setInput(enabled) {
+  document.getElementById('answerInput').disabled = !enabled;
+  document.getElementById('sendBtn').disabled     = !enabled;
+  if (enabled) document.getElementById('answerInput').value = '';
+}
+
+// ── SUBMIT ANSWER ─────────────────────────────────────────────
+function submitAnswer() {
+  const inp = document.getElementById('answerInput');
+  const ans = inp.value.trim().toLowerCase();
+  if (!ans || isLoading || !currentQ) return;
+
+  setInput(false);
+  hideFeedback();
+
+  const correct = currentQ.keywords.some(kw => ans.includes(kw));
+
+  if (correct) {
+    correctCount++;
+    updateProgress();
+    showFeedback('correct', '🎉', 'Jawaban benar! Keren! +1');
+    if (correctCount >= REQUIRED) {
+      setTimeout(showSuccess, 900);
+    } else {
+      setTimeout(loadQuestion, 1200);
+    }
+  } else {
+    showFeedback('wrong', '❌', 'Belum tepat, coba lagi!');
+    const hintEl = document.getElementById('qHint');
+    hintEl.textContent = '💡 Petunjuk: ' + currentQ.hint;
+    hintEl.style.display = 'block';
+    setTimeout(() => setInput(true), 500);
+  }
+}
+
+// ── PROGRESS ─────────────────────────────────────────────────
+function updateProgress() {
+  const pct = Math.min(100, (correctCount / REQUIRED) * 100);
+  document.getElementById('progressFill').style.width  = pct + '%';
+  document.getElementById('progressLabel').textContent = correctCount + ' / ' + REQUIRED;
+}
+
+// ── FEEDBACK ─────────────────────────────────────────────────
+function showFeedback(type, icon, msg) {
+  const el = document.getElementById('feedback');
+  el.className = 'feedback ' + type;
+  document.getElementById('fbIcon').innerHTML  = icon;
+  document.getElementById('fbMsg').textContent = msg;
+  el.style.display = 'flex';
+}
+function hideFeedback() { document.getElementById('feedback').style.display = 'none'; }
+
+// ── SUCCESS → STATUS PAGE ─────────────────────────────────────
+let sessionStart = null;
+let tickTimer    = null;
+
+function showSuccess() {
+  const flash = document.getElementById('successFlash');
+  flash.classList.add('show');
+  setTimeout(() => {
+    flash.classList.remove('show');
+    goToStatusPage();
+  }, 1800);
+}
+
+function goToStatusPage() {
+  document.getElementById('portalPage').style.display  = 'none';
+  document.getElementById('statusPage').style.display  = 'block';
+  sessionStart = Date.now();
+
+  // isi waktu mulai & terakhir aktif
+  const now = new Date();
+  const fmt  = d => d.toLocaleString('id-ID', { dateStyle:'medium', timeStyle:'short' });
+  document.getElementById('st-mulai').textContent = fmt(now);
+  document.getElementById('st-aktif').textContent = fmt(now);
+
+  // topbar brand text
+  document.querySelector('.topbar-brand').lastChild.textContent = ' Client Status';
+
+  // simulasi data naik tiap detik
+  let dlKb = 0, ulKb = 0;
+  clearInterval(tickTimer);
+  tickTimer = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+    const h = Math.floor(elapsed/3600);
+    const m = Math.floor((elapsed%3600)/60);
+    const s = elapsed % 60;
+    document.getElementById('st-durasi').textContent = `${h}j ${m}m ${s}d`;
+
+    dlKb += Math.round(Math.random() * 80 + 20);
+    ulKb += Math.round(Math.random() * 15 + 5);
+    const dlAvg = elapsed > 0 ? Math.round((dlKb * 8) / elapsed) : 0;
+    const ulAvg = elapsed > 0 ? Math.round((ulKb * 8) / elapsed) : 0;
+
+    document.getElementById('st-dl').textContent     = dlKb.toLocaleString() + ' KB';
+    document.getElementById('st-ul').textContent     = ulKb.toLocaleString() + ' KB';
+    document.getElementById('st-dl-avg').textContent = dlAvg + ' Kb/s';
+    document.getElementById('st-ul-avg').textContent = ulAvg + ' Kb/s';
+    document.getElementById('st-aktif').textContent  = fmt(new Date());
+  }, 1000);
+}
+
+function refreshStatus() {
+  const btn = document.querySelector('.refresh-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Memuat...';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg> Refresh Status';
+  }, 1000);
+}
+
+function doLogout() {
+  if (!confirm('Yakin mau logout dari jaringan? (ini demo)')) return;
+  resetDemo();
+}
+
+function resetDemo() {
+  clearInterval(tickTimer);
+  correctCount = 0;
+  updateProgress();
+  document.getElementById('statusPage').style.display = 'none';
+  document.getElementById('portalPage').style.display = 'block';
+  document.querySelector('.topbar-brand').lastChild.textContent = ' Jangkrik AI';
+  loadQuestion();
+}
+
+// ── ABOUT MODAL ───────────────────────────────────────────────
+function openAbout()  { document.getElementById('aboutOverlay').classList.add('open');    document.body.style.overflow = 'hidden'; }
+function closeAbout() { document.getElementById('aboutOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+function closeAboutOutside(e) { if (e.target === document.getElementById('aboutOverlay')) closeAbout(); }
+
+// ── CHAT ──────────────────────────────────────────────────────
+const demoReplies = [
+  'Coba perhatikan petunjuk yang muncul di bawah soal ya! 💡',
+  'Jawaban biasanya cukup satu kata. Jangan terlalu panjang! 😊',
+  'Untuk kategori Tebak, jawabannya sering sesuatu yang sederhana tapi tidak terduga.',
+  'Kalau soal Religi, fokus pada nama kitab, nabi, atau ibadah utama.',
+  'Soal Umum biasanya seputar pengetahuan dasar Indonesia. Modal belajar IPS! 🇮🇩',
+  'Kamu sudah menjawab ' + correctCount + ' soal dengan benar. Semangat! 🦗',
+  'Ini adalah portal WiFi berbasis AI yang berjalan di router OpenWrt GL-B1300. Keren kan? 😄',
+  'Di portal asli, setelah ' + REQUIRED + ' jawaban benar kamu langsung dapat akses internet!',
+];
+let replyIdx = 0;
+
+// ── DETAIL LANJUTAN ───────────────────────────────────────────
+function toggleAdv() {
+  const btn  = document.getElementById('advBtn');
+  const body = document.getElementById('advBody');
+  const open = body.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const card = document.getElementById('chatCard');
+  const btn  = document.getElementById('chatToggleBtn');
+  if (chatOpen) {
+    card.classList.add('open');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Sembunyikan Kendo`;
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else {
+    card.classList.remove('open');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Tanya Kendo - butuh bantuan?`;
+  }
+}
+
+function chatKeydown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+
+function sendChat() {
+  const ta  = document.getElementById('chatInput');
+  const msg = ta.value.trim();
+  if (!msg) return;
+  appendMsg('user', msg);
+  ta.value = ''; ta.style.height = 'auto';
+  document.getElementById('chatSendBtn').disabled = true;
+
+  const typingId = appendTyping();
+  setTimeout(() => {
+    removeTyping(typingId);
+    // Demo: pilih reply relevan atau round-robin
+    let reply;
+    const lower = msg.toLowerCase();
+    if (lower.includes('hint') || lower.includes('petunjuk') || lower.includes('bantuan') || lower.includes('help')) {
+      reply = currentQ ? '💡 Petunjuk untuk soal ini: ' + currentQ.hint : 'Muat soal dulu ya!';
+    } else if (lower.includes('soal') || lower.includes('pertanyaan')) {
+      reply = 'Soal aktif: "' + (currentQ ? currentQ.q : '(belum ada)') + '"';
+    } else {
+      reply = demoReplies[replyIdx % demoReplies.length];
+      replyIdx++;
+    }
+    appendMsg('ai', reply);
+    document.getElementById('chatSendBtn').disabled = false;
+    ta.focus();
+  }, 800 + Math.random() * 400);
+}
+
+function appendMsg(role, text) {
+  const msgs = document.getElementById('chatMsgs');
+  const row  = document.createElement('div'); row.className = 'msg-row ' + (role === 'user' ? 'user' : 'ai');
+  const av   = document.createElement('div'); av.className  = 'msg-avatar ' + (role === 'user' ? 'user-av' : 'ai');
+  if (role === 'user') { av.innerHTML = '👤'; } else { av.textContent = 'Ken'; }
+  const bbl = document.createElement('div'); bbl.className = 'msg-bubble'; bbl.textContent = text;
+  row.appendChild(av); row.appendChild(bbl);
+  msgs.appendChild(row); msgs.scrollTop = msgs.scrollHeight;
+}
+
+let _typingSeq = 0;
+function appendTyping() {
+  const id   = 'typing-' + (++_typingSeq);
+  const msgs = document.getElementById('chatMsgs');
+  const row  = document.createElement('div'); row.id = id; row.className = 'msg-row ai';
+  const av   = document.createElement('div'); av.className = 'msg-avatar ai'; av.textContent = 'Ken';
+  const bbl  = document.createElement('div'); bbl.className = 'msg-bubble msg-typing';
+  bbl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  row.appendChild(av); row.appendChild(bbl);
+  msgs.appendChild(row); msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
+</script>
+</body>
+</html>

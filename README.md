@@ -311,58 +311,14 @@ server {
 
 ---
 
-### 5. Konfigurasi `client_params.sh`
-
-Script FAS ini dijalankan oleh openNDS di router. Format HTML **harus** menggunakan double-quoted strings dengan `\"` untuk atribut:
-
-```sh
-#!/bin/sh
-# client_params.sh — FAS script untuk openNDS
-
-header() {
-    htmlhead="<!DOCTYPE html>
-<html>
-<head>
-<meta charset=\"UTF-8\">
-<title>Jangkrik AI Portal</title>
-<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-</head>
-<body>"
-    echo "$htmlhead"
-}
-
-body() {
-    htmlbody="<div class=\"portal-container\">
-<h1>Selamat Datang di Jangkrik AI</h1>
-<p>Jawab kuis untuk mendapatkan akses internet.</p>
-<a href=\"https://192.168.8.100:5000/portal?token=$tok&client=$clientip\">
-    Mulai Kuis
-</a>
-</div>"
-    echo "$htmlbody"
-}
-
-footer() {
-    htmlfooter="</body></html>"
-    echo "$htmlfooter"
-}
-
-header
-body
-footer
-```
-
-> ⚠️ **Penting:** Jangan gunakan heredoc (`<<EOF`) atau command substitution (`$(...)`) di dalam script FAS openNDS — gunakan selalu variabel dengan `echo "$var"`.
-
----
 
 ## ⚙️ Konfigurasi Karakter Kendo / Kendo Character Config
 
-Karakter AI Kendo dikonfigurasi via system prompt di `app.py`:
+Karakter AI Kendo Assistant dikonfigurasi via system prompt di `app.py`:
 
 ```python
-SYSTEM_PROMPT = """Kamu adalah Kendo, asisten AI di portal WiFi Jangkrik AI.
-Karaktermu: blak-blakan, ketus, sedikit jutek, dan latah.
+SYSTEM_PROMPT = """Nama Kamu adalah Kendo, asisten AI di portal WiFi Jangkrik AI.
+Gaya Bicara: blak-blakan, ketus, jutek, Cuek dan latah 😂.
 Meski ketus, kamu tetap membantu dan menjawab pertanyaan dengan benar.
 Jawab dalam Bahasa Indonesia."""
 ```
@@ -426,5 +382,3 @@ MIT License — bebas digunakan dan dimodifikasi. / MIT License — free to use 
 GitHub: [@Kendo-id](https://github.com/Kendo-id)
 
 ---
-
-*Dibuat dengan ☕ dan semangat ngulik / Built with ☕ and the spirit of tinkering*

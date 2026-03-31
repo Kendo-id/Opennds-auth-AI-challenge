@@ -373,7 +373,8 @@ Pull request dan issue sangat disambut! / Pull requests and issues are very welc
 ## 📄 Lisensi / License
 
 MIT License — bebas digunakan dan dimodifikasi. / MIT License — free to use and modify.
-Dilarang untuk diperjualbelikan !! 
+
+🚫 Dilarang untuk diperjualbelikan !!
 ---
 
 ## 👤 Author

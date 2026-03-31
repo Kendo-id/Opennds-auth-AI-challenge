@@ -8,7 +8,7 @@
 
 
 
-[Preview HTML](https://htmlpreview.github.io/?https://kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
+[DEMO Preview](https://kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
 ---
 
    

@@ -1,9 +1,20 @@
-# OpenNDS FAS WiFi Captive Portal with AI Assistant
+<div align="center">
 
-> **Captive portal OpenNDS berbasis AI dengan autentikasi kuis dan asisten AI interaktif**
-> 
-> *A captive portal built on OpenNDS with quiz-based authentication and an interactive AI assistant*
+# 🦗 Jangkrik AI — Captive Portal FAS
 
+**WiFi Hotspot Captive Portal berbasis AI**
+dibangun di atas **openNDS FAS**, **Flask**, dan **Groq API**
+berjalan di router **GL-B1300 (OpenWrt)**
+
+[![Preview Demo](https://img.shields.io/badge/Live_Demo-Preview_Interaktif-d97757?style=for-the-badge)](https://Kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
+[![OpenWrt](https://img.shields.io/badge/OpenWrt-GL--B1300-00b4d8?style=flat-square&logo=openwrt)](https://openwrt.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.x-black?style=flat-square&logo=flask)](https://flask.palletsprojects.com/)
+[![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python)](https://python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+</div>
+
+---
 ![Arsitektur](https://kendo-id.github.io/Opennds-auth-AI-challenge/architecture.svg)
 
 

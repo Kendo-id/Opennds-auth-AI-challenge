@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🦗 Jangkrik AI — Captive Portal FAS
+# OpenNDS — Flask Captive Portal FAS
 
 **WiFi Hotspot Captive Portal berbasis AI**
 dibangun di atas **openNDS FAS**, **Flask**, dan **Groq API**

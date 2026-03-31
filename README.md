@@ -373,12 +373,12 @@ Pull request dan issue sangat disambut! / Pull requests and issues are very welc
 ## 📄 Lisensi / License
 
 MIT License — bebas digunakan dan dimodifikasi. / MIT License — free to use and modify.
-
+Dilarang untuk diperjualbelikan !! 
 ---
 
 ## 👤 Author
 
-**Kendo-id**  
+**Kendo-id (a.k si_GILA)**  
 GitHub: [@Kendo-id](https://github.com/Kendo-id)
-
+Mail: .[GorekDuit](mail://gorekduit.inc@gmail.com)
 ---

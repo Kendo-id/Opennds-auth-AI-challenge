@@ -1,20 +1,18 @@
 """
-portal_app.py — Standalone Captive Portal OpenNDS FAS
+app.py — Standalone Captive Portal OpenNDS FAS by: si_GILA Contact me: gorekduit.inc@gmail.com
 ======================================================
-App Flask terpisah khusus untuk portal hotspot WiFi.
-Berjalan independen dari app.py utama (chatbot).
+App Flask khusus untuk portal hotspot WiFi.
 
 Fitur:
   - Autentikasi openNDS via FAS (fas_secure_enabled=1 & 0)
   - Challenge soal tebak/umum/religi berbasis Groq AI
-  - Chatbot Kendo (judes, cuek, lucu) untuk teman ngobrol di portal
-  - History chat portal di DB tersendiri
-  - API key Groq terpisah dari app utama
+  - Chatbot Kendo Assistant dihalaman portal
+  - History chat portal di DB SQLite
 
 Menjalankan:
-  python portal_app.py
+  python app.py
   atau dengan gunicorn:
-  gunicorn -w 1 -b 0.0.0.0:5001 portal_app:app
+  gunicorn -w 1 -b 0.0.0.0:5001 app:app
 
 Environment Variables:
   PORTAL_GROQ_API_KEY   — API key Groq khusus portal (wajib)

@@ -5,7 +5,6 @@
 **WiFi Hotspot Captive Portal berbasis AI**
 dibangun di atas **openNDS FAS**, **Flask**, dan **Groq API**
 
-[![Preview Demo](https://img.shields.io/badge/Live_Demo-Preview_Interaktif-d97757?style=for-the-badge)](https://Kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
 [![OpenWrt](https://img.shields.io/badge/OpenWrt-GL--B1300-00b4d8?style=flat-square&logo=openwrt)](https://openwrt.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.x-black?style=flat-square&logo=flask)](https://flask.palletsprojects.com/)
 [![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python)](https://python.org/)
@@ -18,7 +17,8 @@ dibangun di atas **openNDS FAS**, **Flask**, dan **Groq API**
 
 
 
-[DEMO Preview](https://kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
+[![Preview Demo](https://img.shields.io/badge/Live_Demo-Preview_Interaktif-d97757?style=for-the-badge)](https://Kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
+
 ---
 
    

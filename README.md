@@ -168,7 +168,8 @@ jangkrik-ai/
 
 - Router GL-iNet dengan OpenWrt (diuji di GL-B1300, OpenWrt 21.02.2)
 - openNDS terinstall di router
-- Python 3.8+ di server/komputer lokal
+- Flask Bakend kali chroot di router Gl.inet GL-B1300
+** flask bakend bisa menggunakan PC/lokal, STB, Termux Android, atau router itu sendiri dgn tambahan extroot**
 - Akun Groq API (gratis di [console.groq.com](https://console.groq.com))
 
 ---

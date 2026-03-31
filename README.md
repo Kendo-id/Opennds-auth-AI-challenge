@@ -378,6 +378,6 @@ Dilarang untuk diperjualbelikan !!
 
 ## 👤 Author
 
-**Kendo-id (a.k si_GILA)**  
+**Kendo-id (a.k.a si_GILA)**  
 GitHub: [@Kendo-id](https://github.com/Kendo-id)
 ---

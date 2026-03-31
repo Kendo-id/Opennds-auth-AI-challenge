@@ -380,6 +380,4 @@ Dilarang untuk diperjualbelikan !!
 
 **Kendo-id (a.k si_GILA)**  
 GitHub: [@Kendo-id](https://github.com/Kendo-id)
-
-Mail: [@GorekDuit](mail:gorekduit.inc@gmail.com)
 ---

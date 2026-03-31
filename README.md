@@ -15,7 +15,8 @@ dibangun di atas **openNDS FAS**, **Flask**, dan **Groq API**
 ---
 ![Arsitektur](https://kendo-id.github.io/Opennds-auth-AI-challenge/architecture.svg)
 
-
+---
+## Interactive Demo Preview
 
 [![Preview Demo](https://img.shields.io/badge/Live_Demo-Preview_Interaktif-d97757?style=for-the-badge)](https://Kendo-id.github.io/Opennds-auth-AI-challenge/preview.html)
 
